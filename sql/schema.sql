@@ -2,7 +2,7 @@
 
 IF OBJECT_ID('dbo.RGW_TaskRun','U') IS NULL
 BEGIN
-    CREATE TABLE dbo.RGW_TaskRun (
+    CREATE TABLE dbo.Db_TaakScheduler_TaskRun (
         RunId               BIGINT IDENTITY(1,1) PRIMARY KEY,
         TaskId              INT NOT NULL,
         StartedAt           DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
@@ -15,7 +15,7 @@ BEGIN
 END
 GO
 
-IF OBJECT_ID('dbo.RGW_Task','U') IS NULL
+IF OBJECT_ID('dbo.Db_TaakScheduler_Task','U') IS NULL
 BEGIN
     CREATE TABLE dbo.RGW_Task (
         TaskId              INT IDENTITY(1,1) PRIMARY KEY,
@@ -55,20 +55,20 @@ GO
 
 IF NOT EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_RGW_TaskRun_Task')
 BEGIN
-    ALTER TABLE dbo.RGW_TaskRun
-    ADD CONSTRAINT FK_RGW_TaskRun_Task
-    FOREIGN KEY (TaskId) REFERENCES dbo.RGW_Task(TaskId);
+    ALTER TABLE dbo.Db_TaakScheduler_TaskRun
+    ADD CONSTRAINT FK_Db_TaakScheduler_TaskRun_Task
+    FOREIGN KEY (TaskId) REFERENCES dbo.Db_TaakScheduler_Task(TaskId);
 END
 GO
 
-IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_RGW_Task_ServerName_NextRunAt')
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_Db_TaakScheduler_Task_ServerName_NextRunAt')
 BEGIN
-    CREATE INDEX IX_RGW_Task_ServerName_NextRunAt
-    ON dbo.RGW_Task (IsEnabled, ServerName, NextRunAt)
+    CREATE INDEX IX_Db_TaakScheduler_Task_ServerName_NextRunAt
+    ON dbo.Db_TaakScheduler_Task (IsEnabled, ServerName, NextRunAt)
     INCLUDE (TaskType, CronExpression, IntervalSeconds);
 END
 GO
 
 /* voorbeeld taak */
--- INSERT dbo.RGW_Task (TaskName, TaskType, Payload, CronExpression, NextRunAt, TimeoutSeconds, MaxRetries, BackoffBaseSec, BackoffFactor, ServerName)
--- VALUES ('RGW inlezen', 'CMD', 'D:\RGW\RGWinlezen.cmd', '0 0/5 * * * ?', SYSUTCDATETIME(), 600, 2, 10, 2.0, 'VNLAPP001');
+-- INSERT dbo.Db_TaakScheduler_Task (TaskName, TaskType, Payload, CronExpression, NextRunAt, TimeoutSeconds, MaxRetries, BackoffBaseSec, BackoffFactor, ServerName)
+-- VALUES ('Db_TaakScheduler_inlezen', 'CMD', 'D:\RGW\Db_TaakScheduler_inlezen.cmd', '0 0/5 * * * ?', SYSUTCDATETIME(), 600, 2, 10, 2.0, 'VNLAPP001');
